@@ -1,0 +1,26 @@
+# Étape 1 : Construction de l'application
+FROM node:23 AS build
+
+WORKDIR /app
+
+# Copie des fichiers de package et installation des dépendances
+COPY package*.json ./
+RUN yarn install
+
+# Copie du reste du code source
+COPY . .
+
+# Construction de l'application
+RUN yarn build
+
+# Étape 2 : Création de l'image finale
+FROM nginx:alpine
+
+# Copie des fichiers de build de l'étape précédente vers le dossier de Nginx
+COPY --from=build /app/build /usr/share/nginx/html
+
+# Exposer le port sur lequel Nginx fonctionne
+EXPOSE 80
+
+# Démarrage de Nginx
+CMD ["nginx", "-g", "daemon off;"]
