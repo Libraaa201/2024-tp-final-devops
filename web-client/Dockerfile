@@ -1,31 +1,16 @@
-# Étape de construction
-FROM node:23-alpine AS builder
+FROM node:23-alpine AS build
 
-# Création du répertoire de travail
 WORKDIR /app
 
-# Copie des fichiers de dépendances
-COPY package*.json ./
-# Installation des dépendances
-RUN npm install
+COPY . /app
 
-# Copie du code source
-COPY . .
+RUN yarn install
+RUN yarn build
+RUN mv .next/server/pages /app/build
 
-# Construction de l'application
-RUN npm run build
+FROM nginx
+COPY --from=build /app/build /usr/share/nginx/html
 
-# Étape de production
-FROM node:18-alpine
-
-# Création du répertoire de travail
-WORKDIR /app
-
-# Copie des fichiers construits depuis l'étape builder
-COPY --from=builder /app ./
-
-# Exposition du port
 EXPOSE 3000
 
-# Commande pour démarrer l'application
-CMD ["npm", "start"]
+ENTRYPOINT [ "nginx", "-g", "daemon off;" ]
