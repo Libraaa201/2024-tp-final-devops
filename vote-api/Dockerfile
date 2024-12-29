@@ -1,5 +1,5 @@
 # Étape 1 : Construction de l'application
-FROM golang:1.20 AS builder
+FROM golang:1.23 AS builder
 
 WORKDIR /app
 
@@ -23,8 +23,15 @@ WORKDIR /root/
 # Copie du binaire de l'étape précédente
 COPY --from=builder /app/vote-api .
 
+# Vérification de la présence du fichier (utile pour le débogage)
+RUN ls -l /root/
+
+# Attribution des permissions d'exécution
+RUN chmod +x /root/vote-api
+
 # Exposition du port de l'API
 EXPOSE 8080
 
 # Démarrage de l'application
 CMD ["./vote-api"]
+docker run --rm -p 8080:8080 -p 5432:5432 img:latest
