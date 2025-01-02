@@ -1,24 +1,21 @@
-# Étape de construction
-FROM golang:1.20 AS builder
+FROM golang:1.23 AS builder
 
-# Création du répertoire de travail
 WORKDIR /app
 
-# Copie des fichiers Go
+COPY go.mod ./
+COPY go.sum ./
+RUN go mod tidy
+
 COPY . .
 
-# Installation des dépendances et compilation
-RUN go mod tidy
-RUN go build -o vote-api .
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -o vote-api .
 
-# Étape de production
 FROM alpine:latest
 
-# Copie du binaire depuis l'étape builder
 COPY --from=builder /app/vote-api /usr/local/bin/vote-api
 
-# Exposition du port
-EXPOSE 4000
 
-# Commande pour démarrer l'application
+ENV PG_URL="postgres://user:password@host.docker.internal:5432/postgres?sslmode=disable"
+EXPOSE 8080
+
 CMD ["vote-api"]

@@ -1,16 +1,21 @@
-FROM node:23-alpine AS build
+FROM node:23-alpine AS builder
 
 WORKDIR /app
 
-COPY . /app
+COPY package*.json ./
 
 RUN yarn install
-RUN yarn build
-RUN mv .next/server/pages /app/build
 
-FROM nginx
-COPY --from=build /app/build /usr/share/nginx/html
+COPY . .
+
+RUN yarn run build
+
+FROM node:18-alpine
+
+WORKDIR /app
+
+COPY --from=builder /app ./
 
 EXPOSE 3000
 
-ENTRYPOINT [ "nginx", "-g", "daemon off;" ]
+CMD ["yarn", "start"]
