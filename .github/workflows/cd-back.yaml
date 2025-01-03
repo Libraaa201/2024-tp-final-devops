@@ -35,3 +35,6 @@ jobs:
           file: ./vote-api/Dockerfile
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/vote-api:latest
+
+      - name: Re-deploy Docker container
+        run: curl ${{ secrets.RENDER_HOOK_BACK }}
