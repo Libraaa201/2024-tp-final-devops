@@ -14,6 +14,9 @@ FROM alpine:latest
 
 COPY --from=builder /app/vote-api /usr/local/bin/vote-api
 
+RUN adduser appuser -DH
+
+USER appuser
 
 ENV PG_URL="postgres://user:password@host.docker.internal:5432/postgres?sslmode=disable"
 EXPOSE 8080
