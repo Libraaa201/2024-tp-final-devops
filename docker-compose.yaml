@@ -10,6 +10,8 @@ services:
       POSTGRES_PASSWORD: password
     ports:
       - "5432:5432"
+    networks:
+      - vote-api-network
 
   vote-api:
     build:
@@ -19,7 +21,9 @@ services:
     environment:
       PG_URL: "postgres://user:password@db:5432/postgres?sslmode=disable"
     depends_on:
-      - db 
+      - db
+    networks:
+      - vote-api-network
 
   web-client:
     build:
@@ -27,5 +31,9 @@ services:
     ports:
       - "3000:3000"
     environment:
-      API_URL: "http://vote-api:8080" 
+      VOTE_API_BASE_URL: "http://vote-api:8080"
+    networks:
+      - vote-api-network
 
+networks:
+  vote-api-network:
