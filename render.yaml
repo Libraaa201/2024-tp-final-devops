@@ -1,0 +1,39 @@
+databases:
+- name: pserv
+  databaseName: pserv
+  user: pserv_user
+  plan: free
+  region: frankfurt
+  ipAllowList:
+  - source: 0.0.0.0/0
+    description: everywhere
+  postgresMajorVersion: "16"
+
+services:
+- type: web
+  name: web-client
+  runtime: image
+  image:
+    url: docker.io/kylianrolin/web-client:latest
+  plan: free
+  envVars:
+  - key: VOTE_API_BASE_URL
+    fromService:
+      name: vote-api
+      type: web
+      property: host 
+  region: frankfurt
+
+- type: web
+  name: vote-api
+  runtime: image
+  image:
+    url: docker.io/kylianrolin/vote-api:latest
+  plan: free
+  envVars:
+  - key: PG_URL
+    fromDatabase:
+      name: pserv
+      property: connectionString
+  region: frankfurt
+version: "1"

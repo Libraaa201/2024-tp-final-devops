@@ -1,0 +1,51 @@
+name: CI Back
+ 
+permissions:
+  actions: read
+  contents: read
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+defaults:
+  run:
+    working-directory: vote-api
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.21.x'
+
+      - name: Install dependencies
+        run: go get .
+
+      - name: Run tests
+        run: go test -v ./...
+
+  build:
+    runs-on: ubuntu-latest
+    needs: tests
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.21.x'
+
+      - name: Install dependencies
+        run: go get .
+
+      - name: Build project
+        run: go build .
