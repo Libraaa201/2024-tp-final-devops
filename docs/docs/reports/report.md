@@ -376,6 +376,8 @@ Ce pipeline valide le code du vote-api en effectuant :
 3. L'exécution des tests unitaires.
 4. Le processus de build.
 
+**NOTE :** Dans le fichier de test ``vitest.config.mts``, nous avons modifier le code afin d'exclure ``**/e2e/**.ts`` et ``**/tests-examples/**.ts``, car ceux-ci comportaient des erreurs lors du lancement de la CI concernant le code web-client.
+
 ```bash
 name: CI Back
  
